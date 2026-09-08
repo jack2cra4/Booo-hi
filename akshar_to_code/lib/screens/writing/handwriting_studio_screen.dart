@@ -548,7 +548,7 @@ class _HandwritingStudioScreenState extends State<HandwritingStudioScreen>
                 ),
               ),
             ),
-          );
+          ),
         );
       }
 }
