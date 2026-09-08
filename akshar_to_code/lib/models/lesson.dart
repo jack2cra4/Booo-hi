@@ -179,6 +179,38 @@ class ProgrammingTopic {
   });
 }
 
+class RuleWord {
+  final String word;
+  final String hindiPronunciation;
+  final String hindiMeaning;
+  final List<int> vowelIndices;
+  final List<int> silentIndices;
+
+  const RuleWord({
+    required this.word,
+    required this.hindiPronunciation,
+    required this.hindiMeaning,
+    this.vowelIndices = const [],
+    this.silentIndices = const [],
+  });
+}
+
+class PronunciationRule {
+  final String id;
+  final String title;
+  final String pattern;
+  final String sound;
+  final List<RuleWord> words;
+
+  const PronunciationRule({
+    required this.id,
+    required this.title,
+    required this.pattern,
+    required this.sound,
+    required this.words,
+  });
+}
+
 class UserProfile {
   String name;
   int avatarIndex;

@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import '../widgets/module_card.dart';
 import 'hindi/hindi_dashboard.dart';
 import 'english/english_dashboard.dart';
+import 'english/pronunciation_rules_screen.dart';
 import 'stories/storybook_library.dart';
 import 'reading/whatsapp_reader.dart';
 import 'reading/newspaper_reader.dart';
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _loadProfile();
     TTSService().init();
+    TTSService().preWarm();
   }
 
   Future<void> _loadProfile() async {
@@ -289,6 +291,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 40),
+                _buildPronunciationBanner(context),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -354,6 +358,96 @@ class _HomeScreenState extends State<HomeScreen> {
               break;
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildPronunciationBanner(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const PronunciationRulesScreen(),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFE53935), Color(0xFF7B1FA2)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF7B1FA2).withOpacity(0.35),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: const BoxDecoration(
+                color: Colors.white24,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.record_voice_over_rounded,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '🔤 A, E, I, O, U के 51 जादुई नियम',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'English उच्चारण के सम्पूर्ण 51 नियम '
+                    '(Master Reading Rules)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                '51 Rules',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF7B1FA2),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

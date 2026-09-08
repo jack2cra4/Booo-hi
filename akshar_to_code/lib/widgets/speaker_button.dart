@@ -7,6 +7,7 @@ class SpeakerButton extends StatelessWidget {
   final String? language;
   final double size;
   final Color? color;
+  final VoidCallback? onTap;
 
   const SpeakerButton({
     super.key,
@@ -14,6 +15,7 @@ class SpeakerButton extends StatelessWidget {
     this.language,
     this.size = 32,
     this.color,
+    this.onTap,
   });
 
   @override
@@ -21,6 +23,10 @@ class SpeakerButton extends StatelessWidget {
     final btnColor = color ?? AppTheme.primary;
     return InkWell(
       onTap: () {
+        if (onTap != null) {
+          onTap!();
+          return;
+        }
         if (language == 'hi-IN') {
           TTSService().speakHindi(text);
         } else if (language == 'en-US') {

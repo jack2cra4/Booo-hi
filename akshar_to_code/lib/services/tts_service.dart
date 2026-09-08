@@ -23,6 +23,46 @@ class TTSService {
     _isInitialized = true;
   }
 
+  Future<void> preWarm({String langCode = 'en-US'}) async {
+    try {
+      await _tts.stop();
+      await _tts.setLanguage(langCode);
+      await _tts.setSpeechRate(0.52);
+      await _tts.setPitch(1.0);
+      await _tts.setVolume(1.0);
+      try {
+        await _tts.setQueueMode(0);
+      } catch (_) {}
+      _isInitialized = true;
+    } catch (e) {
+      debugPrint('TTS preWarm error: $e');
+    }
+  }
+
+  Future<void> speakImmediate(
+    String text, {
+    String? langCode,
+  }) async {
+    if (text.isEmpty) return;
+    try {
+      await _tts.stop();
+      if (langCode != null) {
+        await _tts.setLanguage(langCode);
+      }
+      await _tts.setSpeechRate(0.52);
+      await _tts.setPitch(1.0);
+      try {
+        await _tts.setQueueMode(0);
+      } catch (_) {}
+      await _tts.speak(text);
+      if (langCode != null) {
+        await _tts.setLanguage(_currentLanguage);
+      }
+    } catch (e) {
+      debugPrint('TTS speakImmediate error: $e');
+    }
+  }
+
   Future<void> setLanguage(String langCode) async {
     _currentLanguage = langCode;
     await _tts.setLanguage(langCode);

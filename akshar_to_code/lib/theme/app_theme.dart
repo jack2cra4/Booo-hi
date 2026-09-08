@@ -14,6 +14,10 @@ class AppTheme {
   static const Color error = Color(0xFFFF5252);
   static const Color star = Color(0xFFFFD700);
 
+  static const Color pronounceBase = Color(0xFFFFFFFF);
+  static const Color pronounceVowel = Color(0xFFFFD600);
+  static const Color pronounceSilent = Color(0xFF00E5FF);
+
   static const List<Color> moduleColors = [
     Color(0xFF6C63FF),
     Color(0xFFFF6584),
