@@ -691,6 +691,6 @@ class PronunciationData {
       ],
     )
   ];
-  static const int totalRules = aRules.length + eRules.length +
-      iRules.length + oRules.length + uRules.length;
+  static int get totalRules =>
+      aRules.length + eRules.length + iRules.length + oRules.length + uRules.length;
 }
