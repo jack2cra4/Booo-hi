@@ -18,9 +18,9 @@ class StorybookLibrary extends StatelessWidget {
       appBar: AppBar(
         title: const Text('स्टोरीबुक लाइब्रेरी'),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppTheme.moduleColors[2], Color(0xFF8BC34A)],
+              colors: [AppTheme.moduleColors[2], const Color(0xFF8BC34A)],
             ),
           ),
         ),
@@ -28,13 +28,13 @@ class StorybookLibrary extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const _SectionTitle(
+          _SectionTitle(
             title: '🇮🇳 हिंदी कहानियाँ',
             color: AppTheme.moduleColors[0],
           ),
           ...hindi.map((story) => _StoryCard(story: story)),
           const SizedBox(height: 8),
-          const _SectionTitle(
+          _SectionTitle(
             title: '🇬🇧 English Stories',
             color: AppTheme.moduleColors[1],
           ),

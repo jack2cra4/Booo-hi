@@ -28,7 +28,7 @@ class QuizDashboard extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const _QuizCategoryCard(
+          _QuizCategoryCard(
             title: '🔊 हिंदी: सुनो और सही अक्षर चुनो',
             subtitle: 'अक्षर पहचान',
             color: AppTheme.moduleColors[0],
@@ -42,7 +42,7 @@ class QuizDashboard extends StatelessWidget {
             screenType: _QuizType.hindiWordMatch,
           ),
           const SizedBox(height: 12),
-          const _QuizCategoryCard(
+          _QuizCategoryCard(
             title: '🔤 English: सुनो और सही अक्षर',
             subtitle: 'Phonics Listening',
             color: AppTheme.moduleColors[1],

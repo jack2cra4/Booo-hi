@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../models/lesson.dart';
 import '../../services/tts_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/speaker_button.dart';

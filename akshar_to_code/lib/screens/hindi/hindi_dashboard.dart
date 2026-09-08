@@ -15,7 +15,7 @@ class HindiDashboard extends StatelessWidget {
       appBar: AppBar(
         title: const Text('हिंदी सीखें'),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [AppTheme.moduleColors[0], AppTheme.primary],
             ),
