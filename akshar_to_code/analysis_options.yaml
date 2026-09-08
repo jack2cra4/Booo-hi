@@ -1,0 +1,19 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_single_quotes: true
+    require_trailing_commas: false
+    avoid_print: true
+
+analyzer:
+  errors:
+    missing_required_param: error
+    missing_return: error
+    unused_import: warning
+    deprecated_member_use: ignore
+    unnecessary_import: ignore
+    sort_child_properties_last: ignore
+  exclude:
+    - build/**
+    - .dart_tool/**
