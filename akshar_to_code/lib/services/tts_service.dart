@@ -6,28 +6,45 @@ class TTSService {
   factory TTSService() => _instance;
   TTSService._();
 
+  static const String naturalEngine = 'com.google.android.tts';
+
   final FlutterTts _tts = FlutterTts();
   String _currentLanguage = 'hi-IN';
-  double _speechRate = 0.5;
+  double _speechRate = 0.53;
   bool _isInitialized = false;
+  bool _engineSet = false;
 
   String get currentLanguage => _currentLanguage;
   double get speechRate => _speechRate;
 
+  Future<void> _ensureEngine() async {
+    if (_engineSet) return;
+    try {
+      await _tts.setEngine(naturalEngine);
+    } catch (e) {
+      debugPrint('TTS setEngine skipped: $e');
+    }
+    _engineSet = true;
+  }
+
   Future<void> init() async {
     if (_isInitialized) return;
+    await _ensureEngine();
     await _tts.setLanguage(_currentLanguage);
-    await _tts.setSpeechRate(_speechRate);
+    await _tts.setSpeechRate(0.53);
     await _tts.setVolume(1.0);
     await _tts.setPitch(1.0);
     _isInitialized = true;
   }
 
-  Future<void> preWarm({String langCode = 'en-US'}) async {
+  /// Warms the Google natural voice engine on splash/launch so the very
+  /// first tap speaks with near-zero latency.
+  Future<void> preWarm({String langCode = 'hi-IN'}) async {
     try {
+      await _ensureEngine();
       await _tts.stop();
       await _tts.setLanguage(langCode);
-      await _tts.setSpeechRate(0.52);
+      await _tts.setSpeechRate(0.53);
       await _tts.setPitch(1.0);
       await _tts.setVolume(1.0);
       try {
@@ -39,6 +56,7 @@ class TTSService {
     }
   }
 
+  /// Instant touch trigger: flush the queue and speak immediately.
   Future<void> speakImmediate(
     String text, {
     String? langCode,
@@ -46,10 +64,11 @@ class TTSService {
     if (text.isEmpty) return;
     try {
       await _tts.stop();
+      await _ensureEngine();
       if (langCode != null) {
         await _tts.setLanguage(langCode);
       }
-      await _tts.setSpeechRate(0.52);
+      await _tts.setSpeechRate(0.53);
       await _tts.setPitch(1.0);
       try {
         await _tts.setQueueMode(0);
@@ -65,6 +84,7 @@ class TTSService {
 
   Future<void> setLanguage(String langCode) async {
     _currentLanguage = langCode;
+    await _ensureEngine();
     await _tts.setLanguage(langCode);
   }
 
@@ -76,9 +96,16 @@ class TTSService {
   Future<void> speak(String text, {String? langCode}) async {
     if (text.isEmpty) return;
     try {
+      await _tts.stop();
+      await _ensureEngine();
       if (langCode != null) {
         await _tts.setLanguage(langCode);
       }
+      await _tts.setSpeechRate(_speechRate);
+      await _tts.setPitch(1.0);
+      try {
+        await _tts.setQueueMode(0);
+      } catch (_) {}
       await _tts.speak(text);
       if (langCode != null) {
         await _tts.setLanguage(_currentLanguage);
@@ -93,7 +120,7 @@ class TTSService {
   }
 
   Future<void> speakEnglish(String text) async {
-    await speak(text, langCode: 'en-US');
+    await speak(text, langCode: 'en-IN');
   }
 
   Future<void> stop() async {

@@ -6,8 +6,11 @@ import '../services/tts_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/module_card.dart';
 import 'hindi/hindi_dashboard.dart';
+import 'hindi/matra_chart_screen.dart';
 import 'english/english_dashboard.dart';
 import 'english/pronunciation_rules_screen.dart';
+import 'english/end_letter_rules_screen.dart';
+import 'writing/handwriting_studio_screen.dart';
 import 'stories/storybook_library.dart';
 import 'reading/whatsapp_reader.dart';
 import 'reading/newspaper_reader.dart';
@@ -292,6 +295,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 40),
                 _buildPronunciationBanner(context),
+                const SizedBox(height: 12),
+                _buildExtraBanners(context),
                 const SizedBox(height: 40),
               ],
             ),
@@ -359,6 +364,59 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
       ),
+    );
+  }
+
+  Widget _buildExtraBanners(BuildContext context) {
+    return Column(
+      children: [
+        _AppendBanner(
+          title: '◌ हिंदी-इंग्लिश मात्रा व अक्षर मेल चार्ट',
+          subtitle: 'स्वर + व्यंजन = नया अक्षर • Tap to listen',
+          icon: Icons.linear_scale_rounded,
+          colors: const [Color(0xFF3949AB), Color(0xFF00ACC1)],
+          accent: const Color(0xFF3949AB),
+          badge: 'मात्रा',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MatraChartScreen()),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        _AppendBanner(
+          title: 'English End-Letter Secret Rules',
+          subtitle: 'Stop Memorizing Spellings ✍️',
+          icon: Icons.text_fields_rounded,
+          colors: const [Color(0xFFD81B60), Color(0xFFFF6F00)],
+          accent: const Color(0xFFD81B60),
+          badge: 'Ends',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const EndLetterRulesScreen()),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        _AppendBanner(
+          title: '🖍️ सुलेख स्टूडियो',
+          subtitle: 'लिखावट सुधार व बेसिक स्ट्रोक्स + ट्रेसिंग',
+          icon: Icons.draw_rounded,
+          colors: const [Color(0xFF2E7D32), Color(0xFF00897B)],
+          accent: const Color(0xFF2E7D32),
+          badge: 'सुलेख',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const HandwritingStudioScreen(),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -518,6 +576,105 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AppendBanner extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final List<Color> colors;
+  final Color accent;
+  final String badge;
+  final VoidCallback onTap;
+
+  const _AppendBanner({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.colors,
+    required this.accent,
+    required this.badge,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: accent.withOpacity(0.3),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: Colors.white, size: 26),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                badge,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.bold,
+                  color: accent,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
