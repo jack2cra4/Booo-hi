@@ -15,6 +15,8 @@ void main() async {
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
   ));
-  TTSService().preWarm();
+  try {
+    await TTSService().preWarm();
+  } catch (_) {}
   runApp(const AksharToCodeApp());
 }

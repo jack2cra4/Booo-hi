@@ -85,33 +85,34 @@ class _HindiSentencesScreenState extends State<HindiSentencesScreen> {
           ),
         ),
       ),
-      body: ListView(
+      body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.green.withOpacity(0.3)),
-            ),
-            child: const Text(
-              '💡 वाक्य को ज़ोर से पढ़ो! हर एक शब्द पर स्पीकर दबाओ और सुनो।',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppTheme.textPrimary,
-                fontWeight: FontWeight.w600,
+        itemCount: level.sentences.length + 1,
+        itemBuilder: (context, i) {
+          if (i == 0) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.withOpacity(0.3)),
               ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...level.sentences.map(
-            (sentence) => SentenceCard(
-              sentence: sentence,
-              color: Colors.green,
-            ),
-          ),
-        ],
+              child: const Text(
+                '💡 वाक्य को ज़ोर से पढ़ो! हर एक शब्द पर स्पीकर दबाओ और सुनो।',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppTheme.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            );
+          }
+          return SentenceCard(
+            sentence: level.sentences[i - 1],
+            color: Colors.green,
+          );
+        },
       ),
     );
   }

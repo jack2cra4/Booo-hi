@@ -20,7 +20,10 @@ class TTSService {
   Future<void> _ensureEngine() async {
     if (_engineSet) return;
     try {
-      await _tts.setEngine(naturalEngine);
+      var engines = await _tts.getEngines;
+      if (engines != null && engines.contains(naturalEngine)) {
+        await _tts.setEngine(naturalEngine);
+      }
     } catch (e) {
       debugPrint('TTS setEngine skipped: $e');
     }
@@ -29,19 +32,23 @@ class TTSService {
 
   Future<void> init() async {
     if (_isInitialized) return;
-    await _ensureEngine();
-    await _tts.setLanguage(_currentLanguage);
-    await _tts.setSpeechRate(0.53);
-    await _tts.setVolume(1.0);
-    await _tts.setPitch(1.0);
-    _isInitialized = true;
+    try {
+      await _ensureEngine();
+      await _tts.awaitSpeakCompletion(true);
+      await _tts.setLanguage(_currentLanguage);
+      await _tts.setSpeechRate(0.53);
+      await _tts.setVolume(1.0);
+      await _tts.setPitch(1.0);
+      _isInitialized = true;
+    } catch (e) {
+      debugPrint('TTS fallback initialized: $e');
+    }
   }
 
-  /// Warms the Google natural voice engine on splash/launch so the very
-  /// first tap speaks with near-zero latency.
   Future<void> preWarm({String langCode = 'hi-IN'}) async {
     try {
       await _ensureEngine();
+      await _tts.awaitSpeakCompletion(true);
       await _tts.stop();
       await _tts.setLanguage(langCode);
       await _tts.setSpeechRate(0.53);
@@ -63,6 +70,7 @@ class TTSService {
   }) async {
     if (text.isEmpty) return;
     try {
+      if (!_isInitialized) await init();
       await _tts.stop();
       await _ensureEngine();
       if (langCode != null) {
@@ -84,18 +92,27 @@ class TTSService {
 
   Future<void> setLanguage(String langCode) async {
     _currentLanguage = langCode;
-    await _ensureEngine();
-    await _tts.setLanguage(langCode);
+    try {
+      await _ensureEngine();
+      await _tts.setLanguage(langCode);
+    } catch (e) {
+      debugPrint('TTS setLanguage error: $e');
+    }
   }
 
   Future<void> setSpeechRate(double rate) async {
     _speechRate = rate;
-    await _tts.setSpeechRate(rate);
+    try {
+      await _tts.setSpeechRate(rate);
+    } catch (e) {
+      debugPrint('TTS setSpeechRate error: $e');
+    }
   }
 
   Future<void> speak(String text, {String? langCode}) async {
     if (text.isEmpty) return;
     try {
+      if (!_isInitialized) await init();
       await _tts.stop();
       await _ensureEngine();
       if (langCode != null) {
@@ -124,11 +141,15 @@ class TTSService {
   }
 
   Future<void> stop() async {
-    await _tts.stop();
+    try {
+      await _tts.stop();
+    } catch (_) {}
   }
 
   Future<void> pause() async {
-    await _tts.pause();
+    try {
+      await _tts.pause();
+    } catch (_) {}
   }
 
   void dispose() {

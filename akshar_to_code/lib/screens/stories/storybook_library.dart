@@ -14,6 +14,26 @@ class StorybookLibrary extends StatelessWidget {
     final english = StoryData.englishStories;
     final math = StoryData.mathStory;
 
+    final allItems = <Widget>[
+      _SectionTitle(
+        title: '🇮🇳 हिंदी कहानियाँ',
+        color: AppTheme.moduleColors[0],
+      ),
+      ...hindi.map((story) => _StoryCard(story: story)),
+      const SizedBox(height: 8),
+      _SectionTitle(
+        title: '🇬🇧 English Stories',
+        color: AppTheme.moduleColors[1],
+      ),
+      ...english.map((story) => _StoryCard(story: story)),
+      const SizedBox(height: 8),
+      const _SectionTitle(
+        title: '🔢 Math Storybook',
+        color: AppTheme.warning,
+      ),
+      _StoryCard(story: math),
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('स्टोरीबुक लाइब्रेरी'),
@@ -25,27 +45,10 @@ class StorybookLibrary extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView(
+      body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        children: [
-          _SectionTitle(
-            title: '🇮🇳 हिंदी कहानियाँ',
-            color: AppTheme.moduleColors[0],
-          ),
-          ...hindi.map((story) => _StoryCard(story: story)),
-          const SizedBox(height: 8),
-          _SectionTitle(
-            title: '🇬🇧 English Stories',
-            color: AppTheme.moduleColors[1],
-          ),
-          ...english.map((story) => _StoryCard(story: story)),
-          const SizedBox(height: 8),
-          const _SectionTitle(
-            title: '🔢 Math Storybook',
-            color: AppTheme.warning,
-          ),
-          _StoryCard(story: math),
-        ],
+        itemCount: allItems.length,
+        itemBuilder: (context, i) => allItems[i],
       ),
     );
   }

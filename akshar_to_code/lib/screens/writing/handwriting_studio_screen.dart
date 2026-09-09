@@ -120,9 +120,20 @@ class _HandwritingStudioScreenState extends State<HandwritingStudioScreen>
 
   void _onPanUpdate(DragUpdateDetails d) {
     if (_strokes.isEmpty) return;
+    final lastPts = _strokes.last.pts;
+    if (lastPts.isNotEmpty) {
+      final last = lastPts.last;
+      if ((d.localPosition - last).distance < 0.5) return;
+    }
     setState(() {
-      _strokes.last.pts.add(d.localPosition);
+      lastPts.add(d.localPosition);
     });
+  }
+
+  void _onPanEnd(DragEndDetails d) {
+    if (_strokes.isNotEmpty && _strokes.last.pts.isEmpty) {
+      setState(() => _strokes.removeLast());
+    }
   }
 
   void _undo() {
@@ -448,46 +459,89 @@ class _HandwritingStudioScreenState extends State<HandwritingStudioScreen>
         ),
         SizedBox(
           height: 84,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final c in chars)
-                  InkWell(
-                    onTap: () => setState(() => _traceChar = c),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      width: 38,
-                      height: 38,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: _traceChar == c
-                            ? const Color(0xFF00897B)
-                            : Colors.white,
+          child: _isNumber
+              ? ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: chars.length,
+                  itemBuilder: (context, idx) {
+                    final c = chars[idx];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: InkWell(
+                        onTap: () => setState(() => _traceChar = c),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: _traceChar == c
-                              ? const Color(0xFF00897B)
-                              : const Color(0xFF00897B).withOpacity(0.25),
+                        child: Container(
+                          width: 38,
+                          height: 38,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: _traceChar == c
+                                ? const Color(0xFF00897B)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _traceChar == c
+                                  ? const Color(0xFF00897B)
+                                  : const Color(0xFF00897B).withOpacity(0.25),
+                            ),
+                          ),
+                          child: Text(
+                            c,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: _traceChar == c
+                                  ? Colors.white
+                                  : AppTheme.textPrimary,
+                            ),
+                          ),
                         ),
                       ),
-                      child: Text(
-                        c,
-                        style: TextStyle(
-                          fontSize: _isNumber ? 15 : 19,
-                          fontWeight: FontWeight.bold,
-                          color: _traceChar == c
-                              ? Colors.white
-                              : AppTheme.textPrimary,
+                    );
+                  },
+                )
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final c in chars)
+                        InkWell(
+                          onTap: () => setState(() => _traceChar = c),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: _traceChar == c
+                                  ? const Color(0xFF00897B)
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: _traceChar == c
+                                    ? const Color(0xFF00897B)
+                                    : const Color(0xFF00897B)
+                                        .withOpacity(0.25),
+                              ),
+                            ),
+                            child: Text(
+                              c,
+                              style: TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                                color: _traceChar == c
+                                    ? Colors.white
+                                    : AppTheme.textPrimary,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                    ],
                   ),
-              ],
-            ),
-          ),
+                ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -535,7 +589,9 @@ class _HandwritingStudioScreenState extends State<HandwritingStudioScreen>
               child: GestureDetector(
                 onPanStart: _onPanStart,
                 onPanUpdate: _onPanUpdate,
+                onPanEnd: _onPanEnd,
                 child: CustomPaint(
+                  isRepaintBoundary: true,
                   size: Size.infinite,
                   painter: _TracePainter(
                     strokes: List.of(_strokes),
@@ -632,6 +688,7 @@ class _TracePainter extends CustomPainter {
       final startPaint = Paint()..color = const Color(0xFF2E7D32);
       var first = true;
       for (final pts in guides) {
+        if (pts.isEmpty) continue;
         final scaled = [
           for (final p in pts)
             Offset(
@@ -716,5 +773,12 @@ class _TracePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _TracePainter oldDelegate) => true;
+  bool shouldRepaint(covariant _TracePainter oldDelegate) =>
+      oldDelegate.strokes.length != strokes.length ||
+      oldDelegate.guideText != guideText ||
+      oldDelegate.guideTextOpacity != guideTextOpacity ||
+      oldDelegate.showGuide != showGuide ||
+      (strokes.isNotEmpty &&
+          oldDelegate.strokes.isNotEmpty &&
+          oldDelegate.strokes.last.pts.length != strokes.last.pts.length);
 }
